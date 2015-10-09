@@ -1,0 +1,7 @@
+{
+	"extensionPoints": [
+		{
+			"id": "fileProperty"
+		}
+	]
+}

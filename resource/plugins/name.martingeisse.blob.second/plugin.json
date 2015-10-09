@@ -1,0 +1,15 @@
+{
+	"extensionPoints": [
+		{
+			"id": "test"
+		}
+	],
+	"extensions": [
+		{
+			"extensionPointId": "name.martingeisse.blob.second:test",
+			"data": {
+				"name": "Bratwurst"
+			}
+		}
+	]
+}

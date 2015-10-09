@@ -1,0 +1,73 @@
+
+Blob in 3d-games
+---------------------------
+
+Ein 3d-Game ist erst mal etwas "fertiges". Klar gibt es Extensions und DLC, aber die brauchen in ihrer
+bisherigen Form kein Komplexes Plugin-System.
+
+Interessanter wäre es, ein "Blob Game" zu machen, mit Plugin-DLC, wo sich mit den Plugins nach und
+nach das ganze Spiel verändert. Das wäre auch überhaupt kein herkömmliches Spiel, sondern eher eine
+Art Crowdfunding-Spiel, wo man aus Plugins nach und nach ein Spiel oder auch ein ganz anderes Spiel
+"zusammensetzt". Man würde vermutlich dann mit "Rezepten" o.ä. arbeiten, wobei jedes Rezept angibt:
+- welche Plugins benutzt werden
+- Konfiguration (wobei etwas shared Config denkbar wäre, z.B. Default-Bildauflösung und Key-Bindings)
+- Spieldaten, soweit diese nicht von den Plugins vorgegeben werden
+
+Das ganze wäre also eher das nächste Level an "Baukastensystem". Wäre natürlich viel interessanter
+als Serverkram.
+
+
+Blob auf dem Server:
+---------------------------
+
+vs. OpenStack: OS für Infrastruktur, Blob für Application. Die müssten dann gut zusammenarbeiten.
+	Einzig eine gemeinsame Verwaltungs-GUI wäre schön, aber der ganze Rest würde gut zusammenpassen,
+	weil an keiner Stelle versucht wird, dasselbe Problem zu lösen.
+
+vs. Tomcat: Passt erst mal nicht so gut, weil beide versuchen würden, der Hauptprozess zu sein.
+	Könnte man aber auf diverse Arten lösen:
+	- kein Tomcat
+	- Tomcat-Code als Blob-Modul verpackt
+	- Tomcat als separater Prozess und das als Blob-Modul verpackt
+	- Tomcat als Infrastruktur und Blob deployed da hinein, ggf. über Gradle
+		- dabei Gradle wiederum auf diverse Arten integriert
+
+vs. Docker: Passt auch erst mal nicht so gut, weil in Blob die gesamte Anwendung "zusammen" läuft,
+	in Docker aber in mehrere Container getrennt. Dabei versucht Docker aber hauptsächlich,
+	wie eine Serverfarm zu funktionieren. Man könnte also Blob in einem Container und MySQL in
+	einem zweiten Container laufen lassen. Eine Verwaltung der Container könnte man zwar auch
+	in Blob einbauen, das macht aber nur in bestimmten Fällen Sinn -- besser, das als Teil der
+	Infrastruktur zu betrachten.
+	
+	Ein solcher Fall wäre es, wenn ein Blob-Modul Worker-Container starten will, und das wiederum,
+	wenn diese Codemäßig eng an den Blob gekoppelt sind und nicht wie Microservices abspaltbar
+	sind. Auch dann macht ein "generischer Blob-Worker" als erstes Sinn, also eine Containerverwaltung
+	nur sinnvoll, wenn auch ein generischer Blob-Worker nicht passt (z.B. wenn dann zu viel Code
+	auf den Workern wäre). Fazit: Vorstellbar, aber schon ein spezieller Fall. Ist aber ja auch
+	nicht ausgeschlossen, nur werden sich dann OpenStack und Blob um die Verwaltung streiten.
+	Andererseits könnte natürlich das Starten der Worker statt über die Docker-API auch über die
+	OpenStack-API laufen, und das Problem wäre gelöst.
+
+vs. Microservices: Hier kommt alles wieder hoch, was bei Docker gelöst war. Das Problem dürfte
+	sein, dass Blob und Microservices nicht gut zusammenpassen. Vielleicht nur auf den ersten Blick?
+	Zwar kann man eher schlecht "einen Blob" bauen, der aus Microservices besteht. Das würde ja
+	auch genau die Kapselung beim Bau der Microservices zunichte machen. Man könnte aber sehr wohl
+	eine Anwendung als "einen Blob" bauen, der Microservices benutzt, welche nicht Teil des Blobs
+	sind, aber Teil der Gesamt-Anwendung. Der Blob wäre weiterhin (servertechnisch) ein Monolith;
+	codemäßig wäre er in Blob-Module aufgeteilt.
+	
+	Gut brauchbar wäre Blob als Plugin-fähige "zentralisierte GUI" für ein Microservice-System.
+	Man schreibt diverse Services und baut deren GUI als Plugins für die zentrale GUI. Über
+	Extension Points kann man dann git GUI modular und trotzdem "gut" bauen; dabei braucht es
+	wenn man es richtig macht auf nicht so viel GUI-Wissen in den einzelnen Service-Teams.
+	Beispiel-Extension-Points: Tabs auf der Shop-Seite, Tabs auf der Bestellungs-Seite,
+	Actions an einem Shop, Bedingungen um eine Action auszuführen, Seiten in einem Wizard.
+	
+	Ebenso können Services selbst evtl. als Blob realisiert werden. Das ist ja im Grunde
+	(in dieser Situation) nur ein Application-Framework. Andererseits ist da die Frage,
+	inwiefern das einen Vorteil gegenüber z.B. Guice bringt. Sowas wie in der GUI würde hier
+	die Kapselung kaputtmachen. Sinnvoll wäre es demnach nur für "Infrastruktur-Services"
+	wie der GUI, wo keine Kern-Logic drin ist sondern nur Kern-Infrastruktur ein eine
+	Integration zwischen verschiedenen Services gewünscht ist.
+
+

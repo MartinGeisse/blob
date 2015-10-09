@@ -1,0 +1,23 @@
+{
+	"extensions": [
+		{
+			"extensionPointId": "name.martingeisse.blob.second:test",
+			"data": {
+				"name": "Sauerkraut"
+			}
+		},
+		{
+			"extensionPointId": "name.martingeisse.blob.second:test",
+			"data": {
+				"name": "Schnitzel"
+			}
+		},
+		{
+			"extensionPointId": "name.martingeisse.blob.filebrowser:fileProperty",
+			"data": {
+				"displayName": "Last Modified",
+				"renderer": "name.martingeisse.blob.experiment.lanterna.filebrowser.LastModifiedRenderer"
+			}
+		}
+	]
+}
