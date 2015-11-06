@@ -1,45 +1,23 @@
 /**
  * Copyright (c) 2015 Martin Geisse
+ *
+ * This file is distributed under the terms of the MIT license.
  */
 
 package name.martingeisse.blob.core;
 
-import com.google.gson.JsonObject;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * An extension to the system.
+ * Annotate a class with this annotation to turn it into an extension.
+ * 
+ * The annotation class must implement one and only one extension point interface.
+ * It may implement any number of non-EP interfaces in addition to that.
  */
-public final class Extension {
-
-	private final String extensionPointId;
-	private final JsonObject data;
-
-	/**
-	 * Constructor.
-	 * @param extensionPointId the ID of the extension point targeted by this extension
-	 * @param data the extension data
-	 */
-	Extension(String extensionPointId, JsonObject data) {
-		this.extensionPointId = extensionPointId;
-		this.data = data;
-	}
-
-	/**
-	 * Gets the ID of the extension point targeted by this extension.
-	 *
-	 * @return the extension point ID
-	 */
-	public String getExtensionPointId() {
-		return extensionPointId;
-	}
-
-	/**
-	 * Gets the data for this extension.
-	 *
-	 * @return the extension data
-	 */
-	public JsonObject getData() {
-		return data;
-	}
-
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Extension {
 }

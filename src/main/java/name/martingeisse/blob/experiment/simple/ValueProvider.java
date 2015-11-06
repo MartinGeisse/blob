@@ -4,9 +4,9 @@
  * This file is distributed under the terms of the MIT license.
  */
 
-package name.martingeisse.blob.experiment.core2;
+package name.martingeisse.blob.experiment.simple;
 
-import name.martingeisse.blob.core2.ExtensionPoint;
+import name.martingeisse.blob.core.ExtensionPoint;
 
 /**
  *

@@ -6,9 +6,7 @@
 
 package name.martingeisse.blob.experiment.lanterna;
 
-import name.martingeisse.blob.core.ExtensionObjectProvider;
-import name.martingeisse.blob.core.PluginSystemClient;
-import name.martingeisse.blob.core2.Plugin;
+import name.martingeisse.blob.core.Plugin;
 
 /**
  *
@@ -19,8 +17,6 @@ public class TestApplicationModule extends Plugin {
 	@Override
 	protected void configure() {
 		super.configure();
-		bind(ExtensionObjectProvider.class);
-		bind(PluginSystemClient.class);
 	}
 
 }

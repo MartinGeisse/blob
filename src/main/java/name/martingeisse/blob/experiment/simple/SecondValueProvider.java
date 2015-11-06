@@ -4,20 +4,20 @@
  * This file is distributed under the terms of the MIT license.
  */
 
-package name.martingeisse.blob.experiment.core2;
+package name.martingeisse.blob.experiment.simple;
 
-import name.martingeisse.blob.core2.Extension;
+import name.martingeisse.blob.core.Extension;
 
 /**
  *
  */
 @Extension
-public class FirstValueProvider implements ValueProvider {
+public class SecondValueProvider implements ValueProvider {
 
 	// override
 	@Override
 	public String getValue() {
-		return "first";
+		return "second";
 	}
 	
 }

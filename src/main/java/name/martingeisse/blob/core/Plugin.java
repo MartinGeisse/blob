@@ -4,7 +4,7 @@
  * This file is distributed under the terms of the MIT license.
  */
 
-package name.martingeisse.blob.core2;
+package name.martingeisse.blob.core;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -4,7 +4,7 @@
  * This file is distributed under the terms of the MIT license.
  */
 
-package name.martingeisse.blob.experiment.core2;
+package name.martingeisse.blob.experiment.simple;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

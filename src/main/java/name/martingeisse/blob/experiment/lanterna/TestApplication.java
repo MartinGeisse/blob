@@ -6,27 +6,27 @@
 
 package name.martingeisse.blob.experiment.lanterna;
 
-import name.martingeisse.blob.core.PluginSystemClient;
-import name.martingeisse.blob.experiment.lanterna.filebrowser.FileBrowserWindow;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.googlecode.lanterna.gui.GUIScreen;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
+import name.martingeisse.blob.experiment.lanterna.filebrowser.FileBrowserWindow;
 
 /**
  *
  */
 public class TestApplication {
 
-	private final PluginSystemClient pluginSystemClient;
-
+	private final Provider<FileBrowserWindow> fileBrowserWindowProvider;
+	
 	/**
 	 * Constructor.
-	 * @param pluginSystemClient the plugin system client
+	 * @param fileBrowserWindowProvider ...
 	 */
 	@Inject
-	public TestApplication(PluginSystemClient pluginSystemClient) {
-		this.pluginSystemClient = pluginSystemClient;
+	public TestApplication(Provider<FileBrowserWindow> fileBrowserWindowProvider) {
+		this.fileBrowserWindowProvider = fileBrowserWindowProvider;
 	}
 
 	/**
@@ -37,13 +37,8 @@ public class TestApplication {
 		final Screen screen = new Screen(terminal);
 		final GUIScreen gui = new GUIScreen(screen);
 		gui.getScreen().startScreen();
-		gui.showWindow(new FileBrowserWindow(pluginSystemClient), GUIScreen.Position.FULL_SCREEN);
+		gui.showWindow(fileBrowserWindowProvider.get(), GUIScreen.Position.FULL_SCREEN);
 		gui.getScreen().stopScreen();
-		
-//		System.out.println("--- start ---");
-//		for (Extension e : pluginSystemClient.getExtensionsForExtensionPoint("test")) {
-//			System.out.println(e.getData().get("name").getAsString());
-//		}
 	}
 
 }

@@ -9,7 +9,8 @@ package name.martingeisse.blob.experiment.lanterna.filebrowser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.common.collect.ImmutableList;
+import java.util.Set;
+import com.google.inject.Inject;
 import com.googlecode.lanterna.gui.component.Label;
 import com.googlecode.lanterna.gui.component.Panel;
 
@@ -24,17 +25,19 @@ public class FilePropertiesPanel extends Panel implements FileSelectionListener 
 	
 	private final List<Label> extensionLabels = new ArrayList<>();
 
-	private final ImmutableList<FilePropertyExtension> extensions;
+	private final List<FileProperty> extensions;
 
 	/**
 	 * Constructor.
 	 * @param extensions the extensions used to display file properties
 	 */
-	public FilePropertiesPanel(final ImmutableList<FilePropertyExtension> extensions) {
-		this.extensions = extensions;
+	@Inject
+	public FilePropertiesPanel(final Set<FileProperty> extensions) {
+		List<FileProperty> extensionsList = new ArrayList<>(extensions);
+		this.extensions = extensionsList;
 		addComponent(nameLabel);
 		addComponent(sizeLabel);
-		for (@SuppressWarnings("unused") FilePropertyExtension extension : extensions) {
+		for (@SuppressWarnings("unused") FileProperty extension : extensionsList) {
 			Label label = new Label();
 			extensionLabels.add(label);
 			addComponent(label);
@@ -54,9 +57,9 @@ public class FilePropertiesPanel extends Panel implements FileSelectionListener 
 			sizeLabel.setText("Size: " + newSelection.length());
 		}
 		for (int i=0; i<extensions.size(); i++) {
-			FilePropertyExtension extension = extensions.get(i);
+			FileProperty extension = extensions.get(i);
 			Label label = extensionLabels.get(i);
-			label.setText(extension.renderLabel(newSelection));
+			label.setText(extension.getDisplayName() + ": " + (newSelection == null ? "" : extension.render(newSelection)));
 		}
 	}
 

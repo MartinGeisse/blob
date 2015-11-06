@@ -4,11 +4,7 @@
 package name.martingeisse.blob.experiment.lanterna.filebrowser;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import name.martingeisse.blob.core.Extension;
-import name.martingeisse.blob.core.PluginSystemClient;
-import com.google.common.collect.ImmutableList;
+import com.google.inject.Inject;
 import com.googlecode.lanterna.gui.Window;
 import com.googlecode.lanterna.gui.component.Panel;
 import com.googlecode.lanterna.gui.component.Panel.Orientation;
@@ -21,45 +17,30 @@ import com.googlecode.lanterna.terminal.TerminalSize;
  */
 public class FileBrowserWindow extends Window {
 
-	private final Panel mainPanel;
-	
 	private final FileBrowserListBox listBox;
-	
-	private final FilePropertiesPanel propertiesPanel;
 
+	private final Panel mainPanel;
+		
 	private File folder;
 
 	/**
-	 * @param pluginSystemClient ...
+	 * @param filePropertiesPanel ...
 	 */
-	public FileBrowserWindow(PluginSystemClient pluginSystemClient) {
+	@Inject
+	public FileBrowserWindow(FilePropertiesPanel filePropertiesPanel) {
 		super("File Browser");
+		
 		listBox = new FileBrowserListBox(new TerminalSize(50, 9999));
-		propertiesPanel = new FilePropertiesPanel(getFilePropertyExtensions(pluginSystemClient));
-		listBox.setSelectionListener(propertiesPanel);
-		setFolder(new File("."));
-
+		listBox.setSelectionListener(filePropertiesPanel);
+		
 		mainPanel = new Panel(Orientation.HORISONTAL);
 		mainPanel.addComponent(listBox);
-		mainPanel.addComponent(propertiesPanel);
+		mainPanel.addComponent(filePropertiesPanel);
 		addComponent(mainPanel);
+		
+		setFolder(new File("."));
 	}
 	
-	private ImmutableList<FilePropertyExtension> getFilePropertyExtensions(PluginSystemClient pluginSystemClient) {
-		try {
-			Extension[] extensions = pluginSystemClient.getExtensionsForExtensionPoint("name.martingeisse.blob.filebrowser:fileProperty");
-			List<FilePropertyExtension> filePropertyExtensions = new ArrayList<>();
-			for (Extension extension : extensions) {
-				String displayName = extension.getData().get("displayName").getAsString();
-				String rendererClassName = extension.getData().get("renderer").getAsString();
-				filePropertyExtensions.add(new FilePropertyExtension(displayName, rendererClassName, pluginSystemClient.getExtensionObjectProvider()));
-			}
-			return ImmutableList.copyOf(filePropertyExtensions);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	// override
 	@Override
 	public void onKeyPressed(final Key key) {

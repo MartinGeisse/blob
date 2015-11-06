@@ -159,7 +159,7 @@ public class FileBrowserListBox extends AbstractListBox {
 			super.afterEnteredFocus(direction);
 		} finally {
 			File newSelection = getSelectedFolderEntry();
-			if (!previousSelection.equals(newSelection) && selectionListener != null) {
+			if (selectionListener != null && previousSelection != newSelection && !previousSelection.equals(newSelection)) {
 				selectionListener.onFileSelectionChanged(previousSelection, newSelection);
 			}
 		}
