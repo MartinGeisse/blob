@@ -26,10 +26,14 @@ dependencies {
 	compile 'joda-time:joda-time:2.8.2'
 	compile 'com.google.code.gson:gson:2.3'
 	compile 'com.google.inject:guice:3.0'
+	compile 'com.google.inject.extensions:guice-multibindings:4.0'
 	compile 'commons-beanutils:commons-beanutils:1.9.2'
 	compile 'commons-codec:commons-codec:1.10'
 	compile 'com.google.code.findbugs:jsr305:3.0.0'
 	compile 'com.googlecode.json-simple:json-simple:1.1.1'
+	
+	// reflections
+	compile 'org.reflections:reflections:0.9.10'
 
 	// SWT
 	compile 'org.eclipse.swt:org.eclipse.swt.win32.win32.x86:4.5.1'
