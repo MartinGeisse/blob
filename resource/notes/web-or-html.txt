@@ -1,0 +1,97 @@
+
+Do we want "web-like GUI programming" or "HTML as the layout engine"? The former
+implies the latter, but not the other way round. Context:
+- direct DOM manipulation from application code is possible in principle (no "processes") but may be slower
+- "the web" causes shitty GUIs and we need frameworks like Wicket to fix that, but they're still
+	worse than native GUIs
+
+Example scenario:
+- file browser, shows collapsible tree of folders
+- do not want to load and render-as-HTML the whole tree a priori
+-> just "show and hide DOM nodes" doesn't work; we need to create DOM nodes
+	as a reaction to user input.
+	
+	Ready-made solutions:
+	- solution #1: create the DOM nodes application-side directly in an event callback
+		-> needs "down and dirty DOM juggling" in that handler -> not nice
+	- solution #2: use a JS-side framework, e.g. jQuery UI, ExtJS, ...
+		-> works but they want to roll their own "look & feel"
+	- solution #3: reload the whole window
+		-> needs application-side stateful components, i.e. like Wicket
+	- solution #4: reload part of the window
+		-> needs at least stateless, if not stateful, components like Wicket
+	
+	Solutions using an own framework:
+	- #1 with a framework to handle the low-level stuff
+		-> imposes its own look & feel; in situations where that doesn't cut it it's
+		still low-level DOM juggling
+	- #2 with my own framework -> same problem as with #1
+		-> unless it's #1 or #2 with a Wicket-inspired framework that has things like repeaters
+		and does styling only using CSS
+	- #3 / #4 without simulating the web
+		-> no better than the web, so I might just use that
+
+	Result:
+	- solution #5: "live-Wicket" that works like Wicket, including markup/component separation,
+		but things like repeaters can "live-update" their result markup. That is, the usual
+		request/response cycle is abandoned.
+
+Further considerations:
+- JS-heavy stuff is cumbersome. For ready-made things like context menus, jsTree or CodeMirror that
+	might be okay. But anything beyond that is ugly to write. That's basically why Wicket chooses
+	not to do that, but to use "server-side" components instead.
+- just navigating in OSX Finder has lots of "replace parts of this window" operations.
+- If I choose to use Wicket-style coding, then probably *everything* will be AJAX-based and stateful.
+	(that's not true -- re-rendering the whole Window is OK as long as it's not slow)
+- AjaxRequestTarget.add(component) is equivalent to .update() in a classical GUI -- no big difference there
+
+Since I don't know how to make it "cool" without Wicket, I'll first try *with* Wicket and see if
+there are any major problems with that.
+
+What about the WebApplication scope and lifetime?
+- a window corresponds to a Wicket page
+-> a WebApplication corresponds to an OS application or module
+- Bonus of this scheme: One application can show contents from another application in an iframe without
+	having direct access to its data (similar to Android "activities" that can be invoked from other
+	apps, just here they aren't fullscreen).
+- That's good for pages that should be publicly accessible. Thus they should have a readable URL, like
+		public-gui://address-book.os.martingeisse.name/choose/single?requiredFields=phoneNumber
+		public-gui://file-browser.os.martingeisse.name/dialog/save?type=application/pdf
+- What about "private" pages? These are important for internal dialogs etc. that are not guaranteed to
+	be forward-compatible. From the Wicket side, one would want to
+		setResponsePage(MyPrivatePage.class)
+	which is okay if the default request mapper is replaced by one that generates unforgeable URLs.
+- What about "private" pages in non-Wicket?
+	- is this relevant? If Wicket is *the* Framework, then no.
+	- still, making this possible would be nice.
+	- The real web solves this mainly through session cookies & login forms.
+		- This only works if each window has a private cookie store
+	- In this context, a referer check would actually work because the browser is trusted.
+		-> but other programs than the browser could access it
+		-> no, they wouldn't have an appropriate URL handler
+		-> thus, access to a private URL like
+				private-gui://file-browser.os.martingeisse.name/dialog/confirmation
+			would be refused by the browser itself if the "server" differs from the referrer's server,
+			so no application level "referer" check is needed (people wouldn't want to do that anyway,
+			since referer checks on the web can't be trusted. The one suggested here is more like the
+			CORS permission check)
+- How does this scheme play together with Wicket?
+	- public page URLs would always be bookmarkable, because that's the point of using them
+	- private page URL don't have to be bookmarkable. Everything there could be with stateful pages.
+		So I could check if a "nice" URL is mounted and return a public one then, otherwise it's
+		a private URL (no matter if stateful or wicket/page/some.internal.MyPage)
+- problem? A dialog loads its page from some URL, but it has to recover the context from which it was
+	invoked.
+	- public dialogs (from another app): is a fundamental issue; use parameters for that
+	- private dialogs: may use parameters; same issue as on the web. That's why Wicket's stateful pages
+		are so cool.
+	-> non-web based frameworks "look" cool here because they don't have that issue. But the point is:
+		If you try to sidestep the platform's native framework (in this case Wicket), things *do*
+		get ugly. That's no different from going down to raw X11.
+
+Further considerations:
+- interaction with the GUI follows a scripted/request-response style most of the time anyway, so "the web"
+	actually matches quite well. One occasion where it doesn't is a button that opens a new window. In
+	"the web", that's *two* request/response cycles, making it slower and more cumbersome to write
+	(but Wicket removes the "cumbersome" with its render / redirection policy stuff). The "slow" can be
+	removed the same way as in the real web, where it's a problem too, e.g. with SPDY.
